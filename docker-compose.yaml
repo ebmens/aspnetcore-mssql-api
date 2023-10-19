@@ -1,0 +1,32 @@
+version: '3.8'
+services:
+   db:
+     image: mcr.microsoft.com/mssql/server:2022-latest 
+     restart: always
+     container_name: sleekemployees-db
+     ports:
+       - 1433:1433
+     networks:
+       - sleekemployees_appnetwork  
+     environment:
+       - ACCEPT_EULA=Y
+       - MSSQL_SA_PASSWORD=AwesomePass_1234
+   backend:
+     depends_on:
+       - db
+     image: ${DOCKER_REGISTRY-}sleekcompanyemployeesapi
+     container_name: sleekemployees-API
+     build:
+       context: .
+       dockerfile: Dockerfile
+     ports:
+       - 8081:5003
+     networks:
+       - sleekemployees_appnetwork  
+volumes:
+  db_vol_data:
+    driver: local
+networks:
+ sleekemployees_appnetwork:
+    driver: bridge
+    
